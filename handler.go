@@ -29,8 +29,8 @@ func NewAWSLambdaHandler(ctx context.Context, opts *slog.HandlerOptions) slog.Ha
 
 	// Create the Handler using the attributes from lambda context
 	return slog.NewJSONHandler(os.Stdout, opts).
-		WithAttrs([]slog.Attr{slog.String("function-arn", arn)}).
-		WithAttrs([]slog.Attr{slog.String("request-id", requestID)})
+		WithAttrs([]slog.Attr{slog.String("function_arn", arn)}).
+		WithAttrs([]slog.Attr{slog.String("request_id", requestID)})
 }
 
 func getLogLevel() slog.Leveler {
