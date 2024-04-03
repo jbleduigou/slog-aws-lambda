@@ -4,8 +4,10 @@ import (
 	"context"
 	"log/slog"
 	"os"
+	"testing"
 
 	"github.com/aws/aws-lambda-go/lambdacontext"
+	"github.com/stretchr/testify/assert"
 )
 
 type LambdaHandler struct {
