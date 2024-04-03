@@ -23,7 +23,12 @@ func NewAWSLambdaHandler(ctx context.Context, opts *slog.HandlerOptions) slog.Ha
 	}
 
 	// Retrieve AWS Request ID and lambda function arn
-	lc, _ := lambdacontext.FromContext(ctx)
+	lc, found := lambdacontext.FromContext(ctx)
+
+	if !found {
+		return slog.NewJSONHandler(os.Stdout, opts)
+	}
+
 	requestID := lc.AwsRequestID
 	arn := lc.InvokedFunctionArn
 

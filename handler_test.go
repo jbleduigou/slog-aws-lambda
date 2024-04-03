@@ -1,6 +1,7 @@
 package slogawslambda
 
 import (
+	"context"
 	"log/slog"
 	"os"
 	"testing"
@@ -48,4 +49,12 @@ func TestGetLogLevel(t *testing.T) {
 			assert.Equal(t, got, tt.want)
 		})
 	}
+}
+
+func TestUsingNonAwsContextShouldNotError(t *testing.T) {
+	ctx := context.Background()
+
+	h := NewAWSLambdaHandler(ctx, nil)
+
+	assert.NotNil(t, h)
 }
