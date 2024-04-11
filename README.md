@@ -27,6 +27,8 @@ The handler will log the following attributes by default:
 * `request-id`: the unique request ID for the lambda function invocation.
 * `function-arn`: the Amazon Resource Name (ARN) that's used to invoke the function, indicates if the invoker specified a version number or alias.
 
+Also, it will set the log level based on the `LOG_LEVEL` environment variable.
+
 ### Using the handler as default handler
 
 ```go
@@ -97,6 +99,48 @@ slog.SetDefault(slog.New(slogawslambda.NewAWSLambdaHandler(ctx, &slog.HandlerOpt
     },
 })))
 ```
+
+### Setting the log level using CloudFormation/SAM
+
+Another important aspect is to customize the log level.  
+Typically you might want to have a higher level in production (e.g. only log error level messages) to lower the cost of your CloudWatch logs.  
+This can be achieved by providing a value for the environment variable `LOG_LEVEL`.
+
+If you are using CloudFormation or SAM as your infrastructure as code tool you could do the following:
+
+```yml
+BudgetCategorizerFunction:
+Type: AWS::Serverless::Function 
+Properties:
+  CodeUri: ./
+  Handler: bootstrap
+  Environment: 
+    Variables:
+      LOG_LEVEL: 'debug'
+```
+
+### Setting the log level using Terraform
+
+If you are using Terraform as your infrastructure as code tool you could do the following:
+
+```terraform
+resource "aws_lambda_function" "hello_world_arm64" {
+  filename         = "bootstrap.zip"
+  function_name    = "helloWorldarm64"
+  architectures    = ["arm64"]
+  role             = aws_iam_role.lambda_role.arn
+  handler          = "bootstrap"
+  runtime          = "provided.al2"
+  source_code_hash = filebase64sha256("bootstrap.zip")
+  
+  environment {
+    variables = {
+      LOG_LEVEL = "debug"
+    }
+  }
+}
+```
+
 
 ## 📓 Why should we want to log request ID and function ARN
 
