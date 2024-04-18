@@ -24,8 +24,8 @@ go get github.com/jbleduigou/slog-aws-lambda
 GoDoc: [https://pkg.go.dev/github.com/jbleduigou/slog-aws-lambda](https://pkg.go.dev/github.com/jbleduigou/slog-aws-lambda)
 
 The handler will log the following attributes by default:
-* `request-id`: the unique request ID for the lambda function invocation.
-* `function-arn`: the Amazon Resource Name (ARN) that's used to invoke the function, indicates if the invoker specified a version number or alias.
+* `request_id`: the unique request ID for the lambda function invocation.
+* `function_arn`: the Amazon Resource Name (ARN) that's used to invoke the function, indicates if the invoker specified a version number or alias.
 
 Also, it will set the log level based on the `LOG_LEVEL` environment variable.
 
@@ -61,20 +61,20 @@ slog.Info("Successfully downloaded configuration file from S3", "bucket", bucket
 
 ### Changing the key for request ID or function ARN
 
-The default case for the attributes is dash-case, i.e. we are using `request-id` and `function-arn`.  
+The default case for the attributes is snake-case, i.e. we are using `request_id` and `function_arn`.  
 If you want to switch to another case you can use the `ReplaceAttr` mechanism provided by the slog package.  
 This way allows not only to switch to camel case but also renaming altogether the attribute.
 
-```go
+```golang
 slog.SetDefault(slog.New(slogawslambda.NewAWSLambdaHandler(ctx, &slog.HandlerOptions{
     ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
-		// change request ID to camel case
-        if a.Key == "request-id" {
+	// change request ID to camel case
+        if a.Key == "request_id" {
             a.Key = "requestID"
             return a
         }
         // change the name of the attribute for the invoked function ARN
-        if a.Key == "function-arn" {
+        if a.Key == "function_arn" {
             a.Key = "invokedFunctionARN"
             return a
         }
@@ -88,12 +88,12 @@ slog.SetDefault(slog.New(slogawslambda.NewAWSLambdaHandler(ctx, &slog.HandlerOpt
 You might also want to stop logging the function ARN.  
 For instance if you are not using it and want to save cost on your CloudWatch logs.
 
-```go
+```golang
 slog.SetDefault(slog.New(slogawslambda.NewAWSLambdaHandler(ctx, &slog.HandlerOptions{
     ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
-        if a.Key == "request-id" {
-            // don't log function ARN
-			return slog.Attr{}
+        if a.Key == "request_id" {
+            // don't log function ARN 
+            return slog.Attr{}
         }
         return a
     },
