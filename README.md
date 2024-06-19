@@ -59,6 +59,20 @@ import "log/slog"
 slog.Info("Successfully downloaded configuration file from S3", "bucket", bucket, "object-key", objectKey)
 ```
 
+This will produce the following log statement in CloudWatch Logs:
+```json
+{
+    "time": "2024-06-18T21:36:21.128059573Z",
+    "level": "INFO",
+    "msg": "Successfully downloaded configuration file from S3",
+    "function_arn": "arn:aws:lambda:eu-west-1:01234567890:function:myawesomefunction-chN9TDColFt1",
+    "request_id": "bdb96c48-c3bc-462d-abbd-6b56e6cb3050",
+    "bucket": "configurationbucket",
+    "object-key": "config/configuration.yml"
+}
+```
+
+
 ### Changing the key for request ID or function ARN
 
 The default case for the attributes is snake-case, i.e. we are using `request_id` and `function_arn`.  
@@ -83,6 +97,19 @@ slog.SetDefault(slog.New(slogawslambda.NewAWSLambdaHandler(ctx, &slog.HandlerOpt
 })))
 ```
 
+This will produce the following log statement in CloudWatch Logs:
+```json
+{
+    "time": "2024-06-18T21:36:21.128059573Z",
+    "level": "INFO",
+    "msg": "Successfully downloaded configuration file from S3",
+    "invokedFunctionARN": "arn:aws:lambda:eu-west-1:01234567890:function:myawesomefunction-chN9TDColFt1",
+    "requestID": "bdb96c48-c3bc-462d-abbd-6b56e6cb3050",
+    "bucket": "configurationbucket",
+    "object-key": "config/configuration.yml"
+}
+```
+
 ### Stop logging the function ARN
 
 You might also want to stop logging the function ARN.  
@@ -98,6 +125,17 @@ slog.SetDefault(slog.New(slogawslambda.NewAWSLambdaHandler(ctx, &slog.HandlerOpt
         return a
     },
 })))
+```
+This will produce the following log statement in CloudWatch Logs:
+```json
+{
+    "time": "2024-06-18T21:36:21.128059573Z",
+    "level": "INFO",
+    "msg": "Successfully downloaded configuration file from S3",
+    "request_id": "bdb96c48-c3bc-462d-abbd-6b56e6cb3050",
+    "bucket": "configurationbucket",
+    "object-key": "config/configuration.yml"
+}
 ```
 
 ### Setting the log level using CloudFormation/SAM
