@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"os"
+	"strings"
 
 	"github.com/aws/aws-lambda-go/lambdacontext"
 )
@@ -12,7 +13,11 @@ type LambdaHandler struct {
 	slog.JSONHandler
 }
 
-func NewAWSLambdaHandler(ctx context.Context, opts *slog.HandlerOptions) slog.Handler {
+// NewAWSLambdaHandler creates a new AWS Lambda handler
+// ctx is the context of the lambda function
+// opts are the options for the handler
+// envVars is an optional list of environment variables to add to the handler
+func NewAWSLambdaHandler(ctx context.Context, opts *slog.HandlerOptions, envVars ...string) slog.Handler {
 	if opts == nil {
 		opts = &slog.HandlerOptions{}
 	}
@@ -33,9 +38,23 @@ func NewAWSLambdaHandler(ctx context.Context, opts *slog.HandlerOptions) slog.Ha
 	arn := lc.InvokedFunctionArn
 
 	// Create the Handler using the attributes from lambda context
-	return slog.NewJSONHandler(os.Stdout, opts).
+	h := slog.NewJSONHandler(os.Stdout, opts).
 		WithAttrs([]slog.Attr{slog.String("function_arn", arn)}).
 		WithAttrs([]slog.Attr{slog.String("request_id", requestID)})
+
+	if len(envVars) == 0 {
+		return h
+	}
+
+	// Add the environment variables to the handler as attributes
+	for _, name := range envVars {
+		val, found := os.LookupEnv(name)
+		if found && len(name) > 0 {
+			h = h.WithAttrs([]slog.Attr{slog.String(strings.ToLower(name), val)})
+		}
+	}
+
+	return h
 }
 
 func getLogLevel() slog.Leveler {

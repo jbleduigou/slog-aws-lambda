@@ -72,6 +72,28 @@ This will produce the following log statement in CloudWatch Logs:
 }
 ```
 
+### Adding environment variables as attributes to the log handler
+
+You might want to add some environment variables as attributes to the log handler.
+Typically you would want to add some environment variables that will help you identify the specific deployment of your lambda function.
+You can achieve this by passing the environment variable names as arguments to the `NewAWSLambdaHandler` function.
+
+```golang
+slog.SetDefault(slog.New(slogawslambda.NewAWSLambdaHandler(ctx, nil, "ENVIRONMENT", "REGION")))
+```
+
+This will produce the following log statement in CloudWatch Logs:
+```json
+{
+    "time": "2024-06-18T21:36:21.128059573Z",
+    "level": "INFO",
+    "msg": "Successfully downloaded configuration file from S3",
+    "environment": "production",
+    "region": "eu-west-1",
+    "function_arn": "arn:aws:lambda:eu-west-1:01234567890:function:myawesomefunction-chN9TDColFt1",
+    "request_id": "bdb96c48-c3bc-462d-abbd-6b56e6cb3050"
+}
+```
 
 ### Changing the key for request ID or function ARN
 
